@@ -1,0 +1,9 @@
+name: "React Deploy to S3"
+description: "Build a React.js web app and sync to an AWS S3 repository"
+author: jeanlescure
+runs:
+  using: docker
+  image: Dockerfile
+branding:
+  icon: upload-cloud
+  color: green
