@@ -10,9 +10,7 @@ LABEL repository="https://github.com/jeanlescure/react-deploy-to-s3-action"
 LABEL homepage="https://jeanlescure.io/"
 LABEL maintainer="Jean Lescure <opensource@jeanlescure.io>"
 
-RUN mkdir -p /app
-WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH /github/workspace/node_modules/.bin:$PATH
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
