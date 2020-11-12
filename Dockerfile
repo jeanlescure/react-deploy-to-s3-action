@@ -12,7 +12,7 @@ LABEL maintainer="Jean Lescure <opensource@jeanlescure.io>"
 
 RUN mkdir -p /app
 WORKDIR /app
-ADD entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /entrypoint.sh
 ENV PATH /app/node_modules/.bin:$PATH
+ADD entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
