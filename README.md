@@ -73,7 +73,10 @@ Sensitive information, especially `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY
 | `SOURCE_DIR` | The `yarn build` output directory you wish to sync/upload to S3. | `env` | No | `public` |
 | `DEST_DIR` | The directory inside of the S3 bucket you wish to sync/upload to. For example, `my_project/assets`. Defaults to the root of the bucket. | `env` | No | `/` (root of bucket) |
 | `CLOUDFRONT_DISTRIBUTION_ID` | If you include a CloudFront Distribution Id using this variable, the action will run `aws cloudfront create-invalidation` for the wildcard path `*`, meaning it will completely flush the cache (Note: AWS considers this a single invalidation even though it affects all files in the distribution) so that the new changes synced to S3 are available immediately. | `secret env` | No | N/A |
-| `REACT_SCRIPTS` | If you get the error `/bin/sh: react-scripts: not found`, set this variable to `latest` or one of the [published npm versions](https://www.npmjs.com/package/react-scripts?activeTab=versions). | `env` | No | N/A |
+
+## TROUBLESHOOTING
+
+- Errors such as `/bin/sh: react-scripts: not found` or `To import Sass files, you first need to install node-sass.` are usually caused by these or other libraries being within `devDependencies` in the `package.json`. **ALL** dependencies should be under the `dependencies` entry within `package.json`. A react application which gets pushed to S3 will be bundled with all its dependencies, there is no such thing as dependencies that are used for development vs production, all dependencies are needed to build the final package of html, js, css, etc.
 
 ## License
 

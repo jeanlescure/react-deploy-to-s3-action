@@ -39,10 +39,6 @@ ${AWS_REGION}
 text
 EOF
 
-if [ -n "$REACT_SCRIPTS" ]; then
-  npm install react-scripts@${REACT_SCRIPTS} -g --silent
-fi
-
 # - Install dependencies
 # - Build react bundle
 # - Sync using our dedicated profile and suppress verbose messages.
