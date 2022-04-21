@@ -31,7 +31,7 @@ fi
 NODE_ENV_PREPEND="NODE_ENV=${NODE_ENV:-production}"
 
 # Override yarn in favor of npm
-if $USE_NPM_OVER_YARN then
+if [ $USE_NPM_OVER_YARN ] then
   PACKAGE_MANAGER_COMMAND="${NODE_ENV_PREPEND} npm run build"
 else
   PACKAGE_MANAGER_COMMAND="${NODE_ENV_PREPEND} yarn build"
