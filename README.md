@@ -54,6 +54,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: us-west-1 # optional: defaults to us-east-1
         SOURCE_DIR: bundle # optional: defaults to public
+        USE_NPM_OVER_YARN: true # optional: defaults to false
 ```
 
 ### Configuration
