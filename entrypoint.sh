@@ -30,6 +30,13 @@ fi
 # Override default NODE_ENV (production) if set by user.
 NODE_ENV_PREPEND="NODE_ENV=${NODE_ENV:-production}"
 
+# Override yarn in favor of npm
+if [ -n "$USE_NPM_OVER_YARN" ]; then
+  PACKAGE_MANAGER_COMMAND="${NODE_ENV_PREPEND} npm run build"
+else
+  PACKAGE_MANAGER_COMMAND="${NODE_ENV_PREPEND} yarn build"
+fi
+
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
 aws configure --profile react-deploy-to-s3-action <<-EOF > /dev/null 2>&1
@@ -44,7 +51,7 @@ EOF
 # - Sync using our dedicated profile and suppress verbose messages.
 #   All other flags are optional via the `args:` directive.
 sh -c "yarn" \
-&& sh -c "${NODE_ENV_PREPEND} yarn build" \
+&& sh -c "${PACKAGE_MANAGER_COMMAND}" \
 && sh -c "aws s3 sync ${SOURCE_DIR:-public} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile react-deploy-to-s3-action \
               --no-progress \
