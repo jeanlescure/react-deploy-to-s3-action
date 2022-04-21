@@ -73,6 +73,7 @@ Sensitive information, especially `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY
 | `SOURCE_DIR` | The `yarn build` output directory you wish to sync/upload to S3. | `env` | No | `public` |
 | `DEST_DIR` | The directory inside of the S3 bucket you wish to sync/upload to. For example, `my_project/assets`. Defaults to the root of the bucket. | `env` | No | `/` (root of bucket) |
 | `CLOUDFRONT_DISTRIBUTION_ID` | If you include a CloudFront Distribution Id using this variable, the action will run `aws cloudfront create-invalidation` for the wildcard path `*`, meaning it will completely flush the cache (Note: AWS considers this a single invalidation even though it affects all files in the distribution) so that the new changes synced to S3 are available immediately. | `secret env` | No | N/A |
+| `USE_NPM_OVER_YARN` | Set to true if you want to use NPM over Yarn. | `env` | No | false |
 
 ## TROUBLESHOOTING
 
