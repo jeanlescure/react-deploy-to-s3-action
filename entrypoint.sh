@@ -27,9 +27,6 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
-# Override default NODE_ENV (production) if set by user.
-NODE_ENV_PREPEND="NODE_ENV=${NODE_ENV:-production}"
-
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
 aws configure --profile react-deploy-to-s3-action <<-EOF > /dev/null 2>&1
@@ -39,27 +36,36 @@ ${AWS_REGION}
 text
 EOF
 
-# - Install dependencies
-# - Build react bundle
-# - Sync using our dedicated profile and suppress verbose messages.
-#   All other flags are optional via the `args:` directive.
-sh -c "yarn" \
-&& sh -c "${NODE_ENV_PREPEND} yarn build" \
-&& sh -c "aws s3 sync ${SOURCE_DIR:-public} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
-              --profile react-deploy-to-s3-action \
-              --no-progress \
-              ${ENDPOINT_APPEND} $*"
-SUCCESS=$?
 
-if [ $SUCCESS -eq 0 ]
-then
-  # Invalidate cloudfront distribution if user sets CLOUDFRONT_DISTRIBUTION_ID
-  if [ -n "$CLOUDFRONT_DISTRIBUTION_ID" ]; then
-    sh -c "aws cloudfront create-invalidation \
-                          --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID} \
-                          --paths /\*"
-  fi
-fi
+# 
+source="${SOURCE_DIR:-build}"
+
+#  Sync using our dedicated profile and suppress verbose messages.
+#   - Upload index first.
+#   - Then the other top level files.
+#   - Then the static files.
+sh -c "aws s3 sync ${source}/index.html s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+              --profile react-deploy-to-s3-action \
+              --metadata-directive REPLACE \
+              --cache-control max-age=5 \
+              --no-progress \
+              ${ENDPOINT_APPEND} $*" \
+&& sh -c "aws s3 sync ${source} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+              --profile react-deploy-to-s3-action \
+              --metadata-directive REPLACE \
+              --cache-control max-age=86400 \
+              --exclude index.html --exclude 'static/*' \
+              --no-progress \
+              ${ENDPOINT_APPEND} $*" \
+&& sh -c "aws s3 sync ${source}/static s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+              --profile react-deploy-to-s3-action \
+              --metadata-directive REPLACE \
+              --cache-control max-age=31536000 \
+              --exclude index.html --exclude 'static/*' \
+              --no-progress \
+              ${ENDPOINT_APPEND} $*" \
+
+SUCCESS=$?
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
